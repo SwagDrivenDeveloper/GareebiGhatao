@@ -3,95 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDE-2 Prep Tracker | Mission 90 LPA</title>
+    <title>SDE-2 Mission Control | 90 LPA Target</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #38bdf8;
-            --accent-hover: #0ea5e9;
+            --bg-grad-start: #0f172a;
+            --bg-grad-end: #1e293b;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #38bdf8; /* Sky Blue */
+            --accent-glow: rgba(56, 189, 248, 0.3);
             --success: #22c55e;
-            --border: #334155;
-            --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
-            font-family: var(--font);
-            background-color: var(--bg-color);
-            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 50px;
         }
 
+        /* --- Animations --- */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px var(--accent-glow); }
+            50% { box-shadow: 0 0 20px var(--accent-glow); }
+            100% { box-shadow: 0 0 5px var(--accent-glow); }
+        }
+
+        @keyframes checkPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Layout --- */
         .container {
             max-width: 900px;
             margin: 0 auto;
+            padding: 20px;
         }
 
-        header {
+        /* --- Header & Hero --- */
+        .hero {
             text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 20px;
+            padding: 40px 0;
+            animation: slideIn 0.8s ease-out;
         }
 
-        h1 { margin: 0; font-size: 2.5rem; color: var(--accent); }
-        h2 { margin-top: 0; color: var(--text-secondary); font-size: 1.2rem; font-weight: 400; }
-
-        /* Progress Bar */
-        .progress-container {
-            background: var(--card-bg);
-            border-radius: 999px;
-            height: 20px;
-            width: 100%;
-            margin: 20px 0;
-            overflow: hidden;
-            border: 1px solid var(--border);
+        .hero h1 {
+            font-size: 2.8rem;
+            margin: 0;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
-        .progress-bar {
-            background: linear-gradient(90deg, var(--accent), var(--success));
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: #000;
-            font-weight: bold;
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 10px;
         }
 
-        /* Stats Grid */
-        .stats {
+        /* --- Stats Dashboard --- */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            animation: slideIn 1s ease-out;
         }
 
         .stat-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 16px;
             text-align: center;
-            border: 1px solid var(--border);
+            transition: transform 0.2s;
         }
 
-        .stat-val { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
-        .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
 
-        /* Sections */
-        .section {
-            background: var(--card-bg);
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
+        .stat-val { font-size: 2rem; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        /* --- Progress Bar --- */
+        .progress-wrapper {
+            position: relative;
+            height: 24px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
             overflow: hidden;
+            margin: 0 20px 40px 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #818cf8);
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-glow {
+            position: absolute;
+            top: 0; right: 0; bottom: 0; width: 20px;
+            background: rgba(255,255,255,0.4);
+            filter: blur(5px);
+            box-shadow: 0 0 10px white;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        /* --- Daily Protocol Card --- */
+        .protocol-card {
+            background: linear-gradient(145deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.4));
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+            animation: pulseGlow 4s infinite;
+        }
+        
+        .protocol-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: bold; font-size: 1.2rem; }
+        .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .protocol-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; }
+        .protocol-time { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px; }
+        .protocol-action { font-weight: 500; }
+
+        @media (max-width: 600px) { .protocol-grid { grid-template-columns: 1fr; } }
+
+        /* --- Collapsible Sections --- */
+        .section {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover { border-color: rgba(255,255,255,0.2); }
 
         .section-header {
             padding: 20px;
@@ -100,336 +181,364 @@
             justify-content: space-between;
             align-items: center;
             background: rgba(255, 255, 255, 0.02);
-            transition: background 0.2s;
+            user-select: none;
         }
 
-        .section-header:hover { background: rgba(255, 255, 255, 0.05); }
-        
-        .section-title { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .section-title span { background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
-        
-        .section-content {
-            display: none; /* Hidden by default */
-            padding: 0 20px 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        .section-content.active { display: block; animation: fadeIn 0.3s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Checklist Groups */
-        .group-title {
-            color: var(--accent);
-            margin-top: 20px;
-            margin-bottom: 10px;
+        .section-title { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+        .icon-box { 
+            width: 32px; height: 32px; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center;
             font-size: 1rem;
+        }
+        
+        .c-dsa { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .c-lld { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .c-hld { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+        .c-beh { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+
+        .arrow { transition: transform 0.3s; color: var(--text-muted); }
+        .section.active .arrow { transform: rotate(180deg); }
+
+        .section-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), opacity 0.4s ease;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .section.active .section-content {
+            max-height: 2000px; /* Arbitrary large height */
+            opacity: 1;
+            transition: max-height 0.6s ease-in-out, opacity 0.4s ease;
+        }
+
+        .content-inner { padding: 20px; }
+
+        /* --- Checklist Items --- */
+        .month-header {
+            color: var(--accent);
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border-bottom: 1px solid #334155;
+            margin: 25px 0 10px 0;
             padding-bottom: 5px;
+            border-bottom: 1px solid var(--glass-border);
         }
 
-        .checklist-item {
+        .task-item {
             display: flex;
             align-items: flex-start;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.2s;
-        }
-
-        .checklist-item:hover { background: rgba(255, 255, 255, 0.02); }
-
-        input[type="checkbox"] {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--text-secondary);
-            border-radius: 4px;
-            margin-right: 15px;
-            margin-top: 4px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
             cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .task-item:hover { background: rgba(255,255,255,0.05); }
+
+        .custom-checkbox {
+            min-width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            margin-right: 15px;
             position: relative;
+            transition: all 0.2s;
+            margin-top: 2px;
         }
 
-        input[type="checkbox"]:checked {
-            background-color: var(--success);
+        .task-item.checked .custom-checkbox {
+            background: var(--success);
             border-color: var(--success);
+            animation: checkPop 0.3s;
         }
 
-        input[type="checkbox"]:checked::after {
+        .task-item.checked .custom-checkbox::after {
             content: '✓';
             position: absolute;
             color: white;
             font-size: 14px;
-            left: 3px;
-            top: -2px;
+            left: 4px;
+            top: -1px;
         }
 
-        label { cursor: pointer; flex: 1; }
-        .checked-text { text-decoration: line-through; color: var(--text-secondary); }
+        .task-text { color: var(--text-main); transition: color 0.2s; flex: 1; }
+        .task-item.checked .task-text { color: var(--text-muted); text-decoration: line-through; opacity: 0.6; }
 
-        /* Resources Badge */
-        .resource-tag {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
-            font-weight: bold;
-        }
-        .res-tuf { background: #ef4444; color: white; }
-        .res-hello { background: #f59e0b; color: black; }
-        .res-gaurav { background: #8b5cf6; color: white; }
-        .res-shreyans { background: #10b981; color: black; }
+        .tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: bold; opacity: 0.8; }
+        .tag-imp { background: #ef4444; color: white; }
+        .tag-c { background: #3b82f6; color: white; }
 
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>🚀 SDE-2 Prep Tracker</h1>
-        <h2>Target: 90 LPA @ Google/Uber/Salesforce | Deadline: July 1</h2>
-        
-        <div class="progress-container">
-            <div class="progress-bar" id="totalProgress">0%</div>
-        </div>
+    
+    <div class="hero">
+        <h1>Mission 90 LPA</h1>
+        <p>Target: Google, Uber, Salesforce (SDE-2) | Deadline: July 1, 2026</p>
+    </div>
 
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-val" id="daysLeft">0</div>
-                <div class="stat-label">Days Until July 1</div>
+    <div class="progress-wrapper">
+        <div class="progress-fill" id="progressBar">
+            <div class="progress-glow"></div>
+        </div>
+        <div class="progress-text" id="progressText">0% Complete</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="daysLeft">0</div>
+            <div class="stat-label">Days Left</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="taskCount">0/0</div>
+            <div class="stat-label">Tasks Done</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val">C++</div>
+            <div class="stat-label">Current Mode</div>
+        </div>
+    </div>
+
+    <div class="protocol-card">
+        <div class="protocol-header">
+            <i class="fas fa-stopwatch"></i> Daily Execution Protocol (3.5 Hrs)
+        </div>
+        <div class="protocol-grid">
+            <div class="protocol-item">
+                <div class="protocol-time">Hour 1 (Concept)</div>
+                <div class="protocol-action">Watch Tuf+/Gaurav Sen. Handwriting notes required.</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-val" id="tasksDone">0/0</div>
-                <div class="stat-label">Tasks Completed</div>
+            <div class="protocol-item">
+                <div class="protocol-time">Hour 2-3 (Active Recall)</div>
+                <div class="protocol-action">Code 2 DSA or 1 LLD. No tutorials open.</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-val">3-4 hrs</div>
-                <div class="stat-label">Daily Goal</div>
+            <div class="protocol-item">
+                <div class="protocol-time">Last 30 Mins (Review)</div>
+                <div class="protocol-action">Review yesterday's bug + Read 1 Design Article.</div>
+            </div>
+            <div class="protocol-item">
+                <div class="protocol-time">Weekend (Sat/Sun)</div>
+                <div class="protocol-action">Machine Coding (6hrs) + Mock Interview.</div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <div class="section">
-        <div class="section-header" onclick="toggleSection('dsa')">
-            <div class="section-title">💻 DSA Mastery <span>Tuf+ / Prateek Narang</span></div>
-            <div>▼</div>
+    <div class="section active">
+        <div class="section-header" onclick="toggle(this)">
+            <div class="section-title">
+                <div class="icon-box c-dsa"><i class="fas fa-code"></i></div>
+                DSA: The Google Bar (C++)
+            </div>
+            <i class="fas fa-chevron-down arrow"></i>
         </div>
-        <div class="section-content" id="dsa">
-            
-            <div class="group-title">Phase 1: Foundations (Feb)</div>
-            <div id="dsa-phase1-list"></div>
-
-            <div class="group-title">Phase 2: Advanced Graphs & Trees (Feb-Mar)</div>
-            <div id="dsa-phase2-list"></div>
-
-            <div class="group-title">Phase 3: Dynamic Programming (Mar-Apr)</div>
-            <div id="dsa-phase3-list"></div>
-
-            <div class="group-title">Phase 4: Niche Topics (May)</div>
-            <div id="dsa-phase4-list"></div>
+        <div class="section-content">
+            <div class="content-inner" id="list-dsa">
+                </div>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-header" onclick="toggleSection('lld')">
-            <div class="section-title">🟦 LLD & Machine Coding <span>Shreyans Jain / Hello Interview</span></div>
-            <div>▼</div>
+        <div class="section-header" onclick="toggle(this)">
+            <div class="section-title">
+                <div class="icon-box c-lld"><i class="fas fa-cubes"></i></div>
+                LLD & Machine Coding (C# / C++)
+            </div>
+            <i class="fas fa-chevron-down arrow"></i>
         </div>
-        <div class="section-content" id="lld">
-            <div class="group-title">Theory & Patterns</div>
-            <div id="lld-theory-list"></div>
-
-            <div class="group-title">Top 15 Machine Coding Problems</div>
-            <div id="lld-problems-list"></div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-header" onclick="toggleSection('hld')">
-            <div class="section-title">🏗️ HLD & System Design <span>Gaurav Sen / Hello Interview</span></div>
-            <div>▼</div>
-        </div>
-        <div class="section-content" id="hld">
-            <div class="group-title">Core Concepts</div>
-            <div id="hld-concepts-list"></div>
-
-            <div class="group-title">System Architecture Problems</div>
-            <div id="hld-problems-list"></div>
+        <div class="section-content">
+            <div class="content-inner" id="list-lld"></div>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-header" onclick="toggleSection('behav')">
-            <div class="section-title">🗣️ Behavioral & Leadership <span>STAR Method</span></div>
-            <div>▼</div>
+        <div class="section-header" onclick="toggle(this)">
+            <div class="section-title">
+                <div class="icon-box c-hld"><i class="fas fa-network-wired"></i></div>
+                HLD & System Architecture
+            </div>
+            <i class="fas fa-chevron-down arrow"></i>
         </div>
-        <div class="section-content" id="behav">
-            <div class="group-title">Amazon LPs & Stories</div>
-            <div id="behavioral-list"></div>
+        <div class="section-content">
+            <div class="content-inner" id="list-hld"></div>
         </div>
     </div>
 
-    <footer style="text-align: center; margin-top: 50px; color: var(--text-secondary); font-size: 0.8rem;">
-        <p>Progress is saved automatically to your browser.</p>
-    </footer>
+    <div class="section">
+        <div class="section-header" onclick="toggle(this)">
+            <div class="section-title">
+                <div class="icon-box c-beh"><i class="fas fa-users"></i></div>
+                Behavioral & Leadership
+            </div>
+            <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div class="section-content">
+            <div class="content-inner" id="list-beh"></div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // --- DATA ---
-    const data = {
-        "dsa-phase1-list": [
-            "Arrays: Sliding Window (Fixed/Variable) <span class='resource-tag res-tuf'>Tuf+</span>",
-            "Arrays: 2-Pointers (Trapping Rain Water, 3Sum)",
-            "Arrays: Kadane's Algorithm & Prefix Sum",
-            "LL: Reverse (Iterative/Recursive) & Detect Cycle",
-            "LL: LRU Cache Implementation (Must Do)",
-            "Stack: Monotonic Stack (Next Greater Element)",
-            "Stack: Largest Rectangle in Histogram",
-            "Heap: Kth Largest & Median from Data Stream"
+    /* --- DATA CONFIG --- */
+    const plan = {
+        dsa: [
+            { title: "Week 1: Graph BFS/DFS (Number of Islands, Rotting Oranges)", cat: "Feb" },
+            { title: "Week 1: Topo Sort (Course Schedule I & II)", cat: "Feb" },
+            { title: "Week 2: Dijkstra & Network Delay Time", cat: "Feb" },
+            { title: "Week 2: DSU (Accounts Merge, Kruskal)", cat: "Feb" },
+            { title: "Week 3: DP Grid (Unique Paths II, Min Path Sum)", cat: "Feb" },
+            { title: "Week 3: DP 3D (Cherry Pickup II)", cat: "Feb" },
+            { title: "Week 4: Knapsack & Partition Equal Subset Sum", cat: "Feb" },
+            { title: "Week 4: String DP (LCS, Edit Distance) [HARD]", cat: "Feb", tag: "Must Do" },
+            { title: "Week 14: Tries & Word Search II", cat: "Revision" },
+            { title: "Week 14: Segment Trees (Range Sum Mutable)", cat: "Revision" }
         ],
-        "dsa-phase2-list": [
-            "Trees: Diameter, Max Path Sum, LCA",
-            "Trees: Serialize/Deserialize Binary Tree",
-            "Graphs: BFS/DFS (Number of Islands, Word Ladder)",
-            "Graphs: Topo Sort (Course Schedule I/II)",
-            "Graphs: Dijkstra & Bellman Ford (Network Delay)",
-            "Graphs: DSU (Kruskal's, Redundant Connection)",
-            "Graphs: Tarjan's (Bridges & Articulation Points)"
+        lld: [
+            { title: "Week 5: SOLID Principles & Singleton/Factory Pattern", cat: "Mar" },
+            { title: "Week 5: Strategy Pattern (Payment Gateway)", cat: "Mar" },
+            { title: "Week 6: Parking Lot (Define Spot, Vehicle, Ticket)", cat: "Mar", tag: "Machine Coding" },
+            { title: "Week 6: Code Parking Lot in 90 mins (No Google)", cat: "Mar" },
+            { title: "Week 7: Splitwise (User, Expense, Split)", cat: "Mar", tag: "Machine Coding" },
+            { title: "Week 7: Snake & Ladder (Board, Dice, Player)", cat: "Mar" },
+            { title: "Week 8: BookMyShow (SeatLock Concurrency)", cat: "Mar" },
+            { title: "Week 8: Thread-Safe LRU Cache", cat: "Mar" }
         ],
-        "dsa-phase3-list": [
-            "DP: 1D (Climbing Stairs, House Robber)",
-            "DP: 2D Grid (Unique Paths, Min Path Sum)",
-            "DP: Strings (LCS, Edit Distance)",
-            "DP: Knapsack (0/1, Unbounded, Coin Change)",
-            "DP: LIS (Longest Increasing Subsequence)",
-            "DP: Stocks (Buy/Sell I-IV)",
-            "DP: Partition Equal Subset Sum"
+        hld: [
+            { title: "Week 9: Consistent Hashing & Sharding (Gaurav Sen)", cat: "Apr" },
+            { title: "Week 9: CAP Theorem (Why CA is impossible)", cat: "Apr" },
+            { title: "Week 10: Message Queues (Kafka vs RabbitMQ)", cat: "Apr" },
+            { title: "Week 10: Rate Limiter Design (Token Bucket)", cat: "Apr" },
+            { title: "Week 11: URL Shortener (Base62 + DB Scale)", cat: "Apr" },
+            { title: "Week 11: Notification Service (Priority/Retry)", cat: "Apr" },
+            { title: "Week 12: WhatsApp/Messenger (WebSockets)", cat: "Apr" },
+            { title: "Week 12: Uber Architecture (Quadtrees)", cat: "Apr", tag: "Uber" }
         ],
-        "dsa-phase4-list": [
-            "Tries: Implement Trie & Word Search II",
-            "Segment Trees: Range Sum Query (Mutable)",
-            "Bit Manipulation: Single Number II, XOR tricks",
-            "Math: Sieve, Power(x, n)"
-        ],
-        "lld-theory-list": [
-            "SOLID Principles (Explain with Code)",
-            "Pattern: Strategy (Payment Gateway)",
-            "Pattern: Observer (Notification System)",
-            "Pattern: Factory & Abstract Factory",
-            "Pattern: Singleton (Thread-safe)",
-            "Pattern: Decorator (Pizza/Coffee)",
-            "UML: Class Diagrams & Sequence Diagrams"
-        ],
-        "lld-problems-list": [
-            "Parking Lot (Multiple floors/types) <span class='resource-tag res-shreyans'>Udemy</span>",
-            "Library Management System",
-            "Movie Ticket Booking (Concurrency)",
-            "Snake & Ladder Game",
-            "Splitwise (Simplify Debt)",
-            "Elevator System (State Pattern)",
-            "Vending Machine (State Pattern)",
-            "Rate Limiter (Token Bucket)",
-            "In-Memory Cache (LRU/LFU)",
-            "Tic-Tac-Toe (O(1) check)",
-            "Ride Sharing (Uber LLD)",
-            "Food Delivery (Zomato LLD)"
-        ],
-        "hld-concepts-list": [
-            "Load Balancers (L4 vs L7) <span class='resource-tag res-gaurav'>InterviewReady</span>",
-            "Consistent Hashing & Sharding",
-            "CAP Theorem & PACELC",
-            "Caching Strategies (Write-through vs Back)",
-            "Message Queues (Kafka vs RabbitMQ)",
-            "Database: SQL vs NoSQL Selection",
-            "Rate Limiting Algorithms"
-        ],
-        "hld-problems-list": [
-            "URL Shortener (TinyURL) <span class='resource-tag res-hello'>Hello Interview</span>",
-            "Pastebin (Blob storage)",
-            "WhatsApp/Messenger (WebSockets)",
-            "Instagram/Twitter Feed (Fan-out)",
-            "Netflix/YouTube (Streaming/CDN)",
-            "Uber/Lyft (Quadtrees/Geohashing)",
-            "Typeahead/Search (Tries)",
-            "Web Crawler (Politeness/Frontier)",
-            "Google Drive/Dropbox (Chunking)",
-            "Distributed ID Generator (Snowflake)",
-            "Notification Service",
-            "Ticketmaster (Distributed Locking)"
-        ],
-        "behavioral-list": [
-            "Draft 'Most Complex Project' Story (STAR)",
-            "Draft 'Conflict Resolution' Story",
-            "Draft 'Mistake/Failure' Story",
-            "Draft 'Innovation/Bias for Action' Story",
-            "Review Amazon Leadership Principles",
-            "Mock Interview: Behavioral (Gemini Pro)"
+        beh: [
+            { title: "Draft: 'Most Complex Project' Story (STAR)", cat: "May" },
+            { title: "Draft: 'Conflict Resolution' Story", cat: "May" },
+            { title: "Draft: 'Failure/Mistake' Story", cat: "May" },
+            { title: "Mock: 3 Full DSA Mocks (Time Pressure)", cat: "May" },
+            { title: "Mock: Design Instagram/Twitter", cat: "May" }
         ]
     };
 
-    // --- INITIALIZATION ---
+    /* --- LOGIC --- */
     function init() {
-        // Calculate Days Left
-        const targetDate = new Date('2026-07-01');
         const today = new Date();
-        const diffTime = Math.abs(targetDate - today);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        document.getElementById('daysLeft').innerText = diffDays;
+        const target = new Date('2026-07-01');
+        const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+        document.getElementById('daysLeft').innerText = diff;
 
-        // Render Lists
-        let totalTasks = 0;
-        for (const [listId, items] of Object.entries(data)) {
-            const container = document.getElementById(listId);
-            items.forEach((item, index) => {
-                const uniqueId = `${listId}-${index}`;
-                const isChecked = localStorage.getItem(uniqueId) === 'true';
-                
-                const div = document.createElement('div');
-                div.className = 'checklist-item';
-                div.innerHTML = `
-                    <input type="checkbox" id="${uniqueId}" ${isChecked ? 'checked' : ''} onchange="toggleTask('${uniqueId}')">
-                    <label for="${uniqueId}" class="${isChecked ? 'checked-text' : ''}">${item}</label>
-                `;
-                container.appendChild(div);
-                totalTasks++;
-            });
-        }
+        renderList('dsa', plan.dsa);
+        renderList('lld', plan.lld);
+        renderList('hld', plan.hld);
+        renderList('beh', plan.beh);
+        
         updateStats();
     }
 
-    // --- ACTIONS ---
-    function toggleSection(id) {
-        const el = document.getElementById(id);
-        el.classList.toggle('active');
+    function renderList(id, items) {
+        const container = document.getElementById(`list-${id}`);
+        let currentCat = '';
+        
+        items.forEach((item, idx) => {
+            // Category Header
+            if(item.cat !== currentCat) {
+                const h = document.createElement('div');
+                h.className = 'month-header';
+                h.innerText = item.cat;
+                container.appendChild(h);
+                currentCat = item.cat;
+            }
+
+            const uniqueId = `${id}-${idx}`;
+            const isChecked = localStorage.getItem(uniqueId) === 'true';
+
+            const div = document.createElement('div');
+            div.className = `task-item ${isChecked ? 'checked' : ''}`;
+            div.onclick = () => toggleTask(uniqueId, div);
+            
+            let tagHtml = item.tag ? `<span class="tag tag-imp">${item.tag}</span>` : '';
+
+            div.innerHTML = `
+                <div class="custom-checkbox"></div>
+                <div class="task-text">${item.title} ${tagHtml}</div>
+            `;
+            container.appendChild(div);
+        });
     }
 
-    function toggleTask(id) {
-        const checkbox = document.getElementById(id);
-        const label = document.querySelector(`label[for="${id}"]`);
+    function toggleTask(id, element) {
+        const isChecked = element.classList.contains('checked');
         
-        localStorage.setItem(id, checkbox.checked);
-        
-        if (checkbox.checked) {
-            label.classList.add('checked-text');
+        if(!isChecked) {
+            element.classList.add('checked');
+            localStorage.setItem(id, 'true');
+            triggerConfetti(element);
         } else {
-            label.classList.remove('checked-text');
+            element.classList.remove('checked');
+            localStorage.setItem(id, 'false');
         }
         updateStats();
     }
 
     function updateStats() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        const checked = document.querySelectorAll('input[type="checkbox"]:checked');
-        
-        const total = checkboxes.length;
-        const done = checked.length;
-        const percent = Math.round((done / total) * 100);
+        const total = document.querySelectorAll('.task-item').length;
+        const checked = document.querySelectorAll('.task-item.checked').length;
+        const pct = Math.round((checked / total) * 100) || 0;
 
-        document.getElementById('tasksDone').innerText = `${done}/${total}`;
-        document.getElementById('totalProgress').style.width = `${percent}%`;
-        document.getElementById('totalProgress').innerText = `${percent}%`;
+        document.getElementById('taskCount').innerText = `${checked}/${total}`;
+        document.getElementById('progressBar').style.width = `${pct}%`;
+        document.getElementById('progressText').innerText = `${pct}% Complete`;
+
+        if(pct === 100) bigCelebration();
+    }
+
+    function toggle(header) {
+        header.parentElement.classList.toggle('active');
+    }
+
+    function triggerConfetti(element) {
+        const rect = element.getBoundingClientRect();
+        // Normalized coordinates for canvas-confetti (0 to 1)
+        const x = (rect.left + rect.width / 2) / window.innerWidth;
+        const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+        confetti({
+            particleCount: 60,
+            spread: 70,
+            origin: { x: x, y: y },
+            colors: ['#38bdf8', '#22c55e', '#ffffff'],
+            disableForReducedMotion: true,
+            zIndex: 9999
+        });
+    }
+
+    function bigCelebration() {
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+    }
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
     }
 
     // Run
